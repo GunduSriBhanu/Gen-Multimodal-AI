@@ -1,1 +1,2 @@
-To Store Packages
+boto3>=1.28.59
+python-dotenv
