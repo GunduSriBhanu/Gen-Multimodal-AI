@@ -1,2 +1,7 @@
 boto3>=1.28.59
 python-dotenv
+spacy
+googlesearch-python
+wikipedia
+duckduckgo-search
+wikipedia-api
