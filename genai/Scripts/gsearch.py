@@ -1,5 +1,8 @@
 import streamlit as st
 from googlesearch import search
+from langchain_community.tools import YouTubeSearchTool
+
+from langchain_community.utilities import StackExchangeAPIWrapper
 
 def google_search(query, num_results=5):
     """
@@ -34,7 +37,13 @@ def chatbot():
             else:
                 st.write("Chatbot: Sorry, I couldn't find any relevant information.")
 
-if __name__ == "__main__":
-    st.title("Chatbot with Google Search")
-    st.write("Welcome to the Chatbot! Type your query below or type 'quit' to exit.")
-    chatbot()
+tool = YouTubeSearchTool()
+print(tool.run("Construction JH Kelly"))
+
+
+stackexchange = StackExchangeAPIWrapper()
+
+print(stackexchange.run("zsh: command not found: python"))
+
+
+chatbot()

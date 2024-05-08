@@ -7,10 +7,15 @@ import json
 import os
 import base64
 import requests
+import spacy
 from dotenv import load_dotenv
 load_dotenv()
 
-image_path = r"C:\Users\SGundu\Generative AI\genai\Image_Page4_v4.png"
+#image_path = r"C:\Users\SGundu\Generative AI\genai\Image_Page6_v17.png"
+image_path = r"C:\Users\SGundu\Textract-Research\myenv\Scripts\demo-bucket-ifc_reducing_valve\Image_Page2_v5.png"
+
+# Load the English language model
+nlp = spacy.load("en_core_web_sm")
 
 bedrock = boto3.client(service_name="bedrock-runtime",aws_access_key_id=os.getenv("AWS_ACCESS_KEY"),
     aws_secret_access_key=os.getenv("AWS_SECRET_KEY"),
@@ -98,15 +103,15 @@ def invoke_claude_3_multimodal(prompt, base64_image_data):
             output_tokens = result["usage"]["output_tokens"]
             output_list = result.get("content", [])
 
-            print("Invocation details:")
+            #print("Invocation details:")
             #print(f"- The input length is {input_tokens} tokens.")
             #print(f"- The output length is {output_tokens} tokens.")
 
             #print(f"- The model returned {len(output_list)} response(s):")
-            for output in output_list:
-                print(output["text"])
+            #for output in output_list:
+                #print(output["text"])
 
-            return result
+            return output_list #result
         except ClientError as err:
             logger.error(
                 "Couldn't invoke Claude 3 Sonnet. Here's why: %s: %s",
@@ -116,5 +121,18 @@ def invoke_claude_3_multimodal(prompt, base64_image_data):
             raise
 
            
-invoke_claude_3_multimodal("what the image is about based on labeling in a single word?", base64_image)    
-invoke_claude_3_multimodal("what the image is about based on product component in a single word?", base64_image)       
+sentence_label = invoke_claude_3_multimodal("what the image is about based on labeling in a single sentence?", base64_image)    
+sentence_component = invoke_claude_3_multimodal("what the image is about based on product component in a single word?", base64_image)     
+
+sentence = sentence_label[0]['text'] 
+
+# Process the sentence using spaCy
+doc = nlp(sentence)
+
+# Extract common nouns
+common_nouns = [token.text for token in doc if token.pos_ == "NOUN"]
+
+# Print the extracted common nouns
+print("Common Nouns:", common_nouns)
+
+print(invoke_claude_3_multimodal("what is the summary of image?", base64_image)[0]['text'])
